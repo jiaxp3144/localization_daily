@@ -1,3 +1,9 @@
+''' This module performs the following functions:
+    1) listWavFile() find all the wav files in the path(& subpath)
+    2) audioRead() read wav file
+    3) audioWrite() write wav file
+    4) audioPlay() play the read wav data
+'''
 import os
 import wave
 import numpy as np
