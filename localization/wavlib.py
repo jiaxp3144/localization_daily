@@ -45,7 +45,7 @@ def audioRead(filename):
   wave_data_f = np.array([float(i)/(2**(params[1]*8-1)) for i in wave_data])
   # if dual-channel, one channel's data in a column
   if params[0] == 2:
-    wave_data.shape = -1,2
+    wave_data_f.shape = -1,2
   return (wave_data_f, params)
   
 def audioWrite(filename, params, wave_data):

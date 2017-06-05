@@ -27,3 +27,4 @@ if __name__=='__main__':
   (wave_data_new, params_new) = datalib.addDirection(\
     wave_data, params, azim, elev, dist, hrir_path)
   wavlib.audioPlay(wave_data_new,params_new)
+  wavlib.audioWrite('test_d.wav',params_new,wave_data_new)
