@@ -5,6 +5,7 @@ import numpy as np
 from scipy import signal
 from scipy import ifft
 from scipy.stats import mode
+import datalib
 
 # test only
 import wavlib
@@ -55,14 +56,45 @@ def GCC(wave_data, params, weight_fun=None, frame_len=512, ref_power=None):
   if delay > 128:
     delay = delay-257
   return delay
-    
-  
+
+''' using cross channel method to find doa
+		don't take elev and dist into consideration
+'''    
+def macdonald2005(wave_data,params,hrir_path):
+  sig_r = wave_data[:,0]
+  sig_l = wave_data[:,1]
+  pcc = []
+  elev = 0
+  dist = 160
+  params = list(params)
+  params[0] = 1
+  for azim in range(0,359,5):
+    [temp, useless] = datalib.addDirection(sig_r, params, azim, elev, dist, hrir_path)
+    temp_r = temp[:,1]
+    [temp, useless] = datalib.addDirection(sig_l, params, azim, elev, dist, hrir_path)
+    temp_l = temp[:,0]
+    pcc.append(np.corrcoef(temp_r, temp_l)[0,1])
+  return [np.argmax(pcc)*5,pcc]
+	
   
   
 
 if __name__=='__main__':
-  for azim in range(0,361,5):
+  '''
+  # test GCC
+  
+  for azim in range(0,361,5):d
     filename = 'test_{0}.wav'.format(azim)
     wave_data, params = wavlib.audioRead(filename)
     time_delay = GCC(wave_data, params,weight_fun=None)
     print("azim={0},delay point={1}".format(azim,time_delay))
+  '''
+  
+  # test macdonald2005
+  filename = 'test_d.wav'
+  wave_data, params = wavlib.audioRead(filename)
+  hrir_path = r'..\..\resources\HRIR_txt'
+  ang,pcc =  macdonald2005(wave_data, params, hrir_path)
+  print(ang)
+  plt.plot(pcc)
+  plt.show()

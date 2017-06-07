@@ -27,11 +27,11 @@ def readHrir(root, azim, elev, dist):
   filename = 'azi'+str(azim)+'_elev'+str(elev)+'_dist'+str(dist)+'.txt'
   # add abs path to filename
   filepath = os.path.join(os.path.abspath(root),filename)
-  # read the first line of the txt file, corresponding to the hrir_r
+  # read the first line of the txt file, corresponding to the hrir_l
   with open(filepath,'r') as f:
     hrir_l = _Line2NumList(f.readline())
   
-  # read the opposite txt file to get the hrir_l
+  # read the opposite txt file to get the hrir_r
   filename = 'azi'+str(360-azim)+'_elev'+str(elev)+'_dist'+str(dist)+'.txt'
   filepath = os.path.join(root,filename)
   with open(filepath,'r') as f:
@@ -47,7 +47,7 @@ def addDirection(sig, params, azim, elev, dist, hrir_path):
     print("Use monaural sig!")
     return
   # get the hrir
-  (hrir_l, hrir_r) = readHrir(hrir_path, azim, elev, dist)
+  (hrir_r, hrir_l) = readHrir(hrir_path, azim, elev, dist)
   # resample the hrir
   if params[2] != 44100:
     hrir_len = int(len(hrir_l)/44100.0*params[2])
