@@ -7,14 +7,7 @@ import matplotlib.pyplot as plt
 import datalib
 import wavlib
 
-if __name__=='__main__':
-  '''
-  # test settings
-  for azim in range(0,361,5):
-    elev = 0
-    dist = 160
-    hrir_path = r'..\..\resources\hrir_txt'
-  '''
+def testReadHrir():
   hrir_path = r'..\..\resources\hrir_txt'
   azim = 90
   elev = 0
@@ -27,18 +20,27 @@ if __name__=='__main__':
   plt.plot(hrir_l)
   plt.show()
   
-  '''
+def testAddDirection():
+  # test settings
+  for azim in range(0,361,5):
+    elev = 0
+    dist = 160
+    hrir_path = r'..\..\resources\hrir_txt'
     # test addDirection
     (wave_data, params) = wavlib.audioRead('test.wav')
     (wave_data_new, params_new) = datalib.addDirection(\
       wave_data, params, azim, elev, dist, hrir_path)
     #wavlib.audioPlay(wave_data_new,params_new)
     wavlib.audioWrite('test_{0}.wav'.format(azim),params_new,wave_data_new)
-  '''
-  hrir_path = r'..\..\resources\hrir_txt'
-  azim = 30
-  elev = 0
-  dist = 160
-  (wave_data, params) = wavlib.audioRead('test.wav')
-  wave_data_new, params_new = datalib.addDirection(wave_data, params, azim, elev, dist, hrir_path)
-  wavlib.audioWrite('test_d.wav',params_new,wave_data_new)
+    
+def testAddNoise():
+  file_name = 'test_d.wav'
+  noise_file_path = r'..\..\resources\noiseX\white.wav'
+  snr = 0
+  wave_data, params = wavlib.audioRead(file_name)
+  sig_n = datalib.addNoise(wave_data, params, snr, noise_file_path)
+  #wavlib.audioPlay(sig_n, params)
+  wavlib.audioWrite('test_d_n.wav', params, sig_n)
+
+if __name__=='__main__':
+  testAddNoise()

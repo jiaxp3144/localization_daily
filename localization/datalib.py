@@ -5,6 +5,8 @@
 
 import os
 import numpy as np
+import random
+import wavlib
 from scipy.signal import resample
 
 #############################
@@ -57,3 +59,41 @@ def addDirection(sig, params, azim, elev, dist, hrir_path):
   sig_out = np.array([np.convolve(sig, hrir_r),np.convolve(sig, hrir_l)]).T
   params_out = (2, params[1], params[2], params[3]*2, params[4], params[5])
   return (sig_out, params_out)
+  
+def addNoise(sig, params, snr, noise_file_path):
+  ''' add noise according to the noise type and snr
+  '''
+  # if dual channel
+  if params[0]==2:
+    params_single = list(params)
+    params_single[0] = 1
+    params_single[2] = params[2]/2
+    sig_r = sig[:,0]
+    sig_l = sig[:,1]
+    sig_r_n = addNoise(sig_r,params_single,snr,noise_file_path)
+    sig_l_n = addNoise(sig_l,params_single,snr,noise_file_path)
+    return np.array([sig_r_n, sig_l_n]).T
+  # if single channel
+  else:
+    # read noise file
+    noise, params_n = wavlib.audioRead(noise_file_path)
+    # resample to fs
+    if params_n[2]!=params[2]:
+      noise_len = int(len(noise)/params_n[2]*params[2])
+      noise = resample(noise, noise_len)
+    # random to start index
+    noise_len = len(noise)
+    sig_len = len(sig)
+    if noise_len <= 5*sig_len:
+      print('ERROR: noise file length is too short for the signal!')
+      return
+    start_index = random.randint(0, noise_len-len(sig))
+    noise_slice = noise[start_index:start_index+sig_len]
+    # decided by snr
+    signal_power = np.sum(sig**2)/sig_len
+    noise_var = signal_power/(10**(snr/10.0))
+    noise_slice = np.sqrt(noise_var)/np.std(noise_slice)*noise_slice
+    sig_n = sig+noise_slice
+    return sig_n
+    
+    

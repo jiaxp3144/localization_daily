@@ -91,7 +91,7 @@ if __name__=='__main__':
   '''
   
   # test macdonald2005
-  filename = 'test_d.wav'
+  filename = 'test_d_n.wav'
   wave_data, params = wavlib.audioRead(filename)
   hrir_path = r'..\..\resources\HRIR_txt'
   ang,pcc =  macdonald2005(wave_data, params, hrir_path)
