@@ -31,13 +31,13 @@ def readHrir(root, azim, elev, dist):
   filepath = os.path.join(os.path.abspath(root),filename)
   # read the first line of the txt file, corresponding to the hrir_l
   with open(filepath,'r') as f:
-    hrir_l = _Line2NumList(f.readline())
+    hrir_r = _Line2NumList(f.readline())
   
   # read the opposite txt file to get the hrir_r
   filename = 'azi'+str(360-azim)+'_elev'+str(elev)+'_dist'+str(dist)+'.txt'
   filepath = os.path.join(root,filename)
   with open(filepath,'r') as f:
-    hrir_r = _Line2NumList(f.readline())
+    hrir_l = _Line2NumList(f.readline())
   
   return (hrir_r, hrir_l)
 
