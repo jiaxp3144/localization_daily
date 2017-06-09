@@ -103,8 +103,41 @@ def testGCC():
   '''
   dp_estimate = fmax(np.array(dp), fit_a[0], fit_a[1])
   print(np.mean(np.abs(dp_estimate-dp_real)))
+  err = dp_estimate-dp_real
+  for i in range(len(err)):
+    if err[i]>10:
+      err[i] = 10
+  plt.hist(err)
+  plt.show()
   
+def testCrossChannel():
+  # 参数设置
+  target_dir = r'.\test_data\ideal'
+  hrir_path = r'..\resources\hrir_txt'
   
+  # 找到音频文件形成list
+  wav_list = wavlib.listWavFile(target_dir)
+  file_num = len(wav_list)
+  
+  # 误差记录list
+  error = []
+  
+  # 预测时延
+  azim_est = []
+  azim_real = []
+  for file_name in wav_list:
+    azim = _getAzimFromFilename(file_name)
+    if azim>90 and azim<270:
+      continue
+    wave_data, params = wavlib.audioRead(file_name)
+    azim_estimate, pcc = tdoalib.macdonald2005(wave_data, params,hrir_path)
+    print azim, azim_estimate
+    azim_real.append(azim)
+    azim_est.append(azim_estimate)
+  print(np.mean(np.abs(azim_est-azim_real)))
+  err = azim_est-azim_real
+  plt.hist(err)
+  plt.show()  
   
 if __name__=='__main__':
-  testGCC()
+  testCrossChannel()
