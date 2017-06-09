@@ -49,7 +49,10 @@ def GCC(wave_data, params, weight_fun=None, frame_len=512, ref_power=None):
     if np.sum(X11[:,i])<ref_power:
       continue
     time_delay.append(np.argmax(Gxx[:,i]))
-    
+  '''print i,np.argmax(Gxx[:,i])
+    plt.plot(Gxx[:,i])
+    plt.show()
+  ''' 
   # use the most frequently appeared value as the estimated value
   delay = mode(time_delay).mode[0]
   # if r is after l, the delay should be minus
@@ -83,18 +86,19 @@ if __name__=='__main__':
   '''
   # test GCC
   
-  for azim in range(0,361,5):d
-    filename = 'test_{0}.wav'.format(azim)
-    wave_data, params = wavlib.audioRead(filename)
-    time_delay = GCC(wave_data, params,weight_fun=None)
-    print("azim={0},delay point={1}".format(azim,time_delay))
+  azim = '90'
+  filename = 'test_{0}_n.wav'.format(azim)
+  wave_data, params = wavlib.audioRead(filename)
+  time_delay = GCC(wave_data, params,weight_fun='phat')
+  print("azim={0},delay point={1}".format(azim,time_delay))
+ 
   '''
-  
   # test macdonald2005
-  filename = 'test_d_n.wav'
+  filename = 'test_30.wav'
   wave_data, params = wavlib.audioRead(filename)
   hrir_path = r'..\..\resources\HRIR_txt'
   ang,pcc =  macdonald2005(wave_data, params, hrir_path)
+  x = range(0,359,5)
   print(ang)
-  plt.plot(pcc)
+  plt.plot(x,pcc)
   plt.show()

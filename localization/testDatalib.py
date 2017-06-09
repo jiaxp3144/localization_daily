@@ -22,7 +22,7 @@ def testReadHrir():
   
 def testAddDirection():
   # test settings
-  for azim in range(0,361,5):
+  for azim in [30]:#range(0,361,5):
     elev = 0
     dist = 160
     hrir_path = r'..\..\resources\hrir_txt'
@@ -34,13 +34,13 @@ def testAddDirection():
     wavlib.audioWrite('test_{0}.wav'.format(azim),params_new,wave_data_new)
     
 def testAddNoise():
-  file_name = 'test_d.wav'
+  file_name = 'test_90.wav'
   noise_file_path = r'..\..\resources\noiseX\white.wav'
   snr = 0
   wave_data, params = wavlib.audioRead(file_name)
   sig_n = datalib.addNoise(wave_data, params, snr, noise_file_path)
   #wavlib.audioPlay(sig_n, params)
-  wavlib.audioWrite('test_d_n.wav', params, sig_n)
+  wavlib.audioWrite('test_90_n.wav', params, sig_n)
 
 if __name__=='__main__':
-  testAddNoise()
+  testAddDirection()
