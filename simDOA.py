@@ -8,6 +8,8 @@ import random
 import os
 import numpy as np
 import re
+import matplotlib.pyplot as plt
+from scipy import optimize
 
 def _angStr(ang):
   if ang<10:
@@ -18,11 +20,11 @@ def _angStr(ang):
     return str(ang)
     
 def _getAzimFromFilename(file_name):
-  pattern = re.compile(r'*s(\d+)_*')
+  pattern = re.compile(r'.*s(\d+)_.*')
   match = pattern.match(file_name)
   num = None
   if match:
-    num = int(match.group())
+    num = int(match.group(1))
   return num
 
 def dataGen():
@@ -64,9 +66,45 @@ def testGCC():
   # 误差记录list
   error = []
   
-  # 判断误差
-  for 
+  # 预测时延
+  dp_num = []
+  dp_azim = []
+  dp = []
+  dp_real = []
+  for file_name in wav_list:
+    azim = _getAzimFromFilename(file_name)
+    if azim>90 and azim<270:
+      continue
+    wave_data, params = wavlib.audioRead(file_name)
+    delay_point = tdoalib.GCC(wave_data, params, weight_fun='phat')
+    print azim, delay_point
+    if azim>180:
+      azim = azim-360
+    if file_name[-6:-4]=='00':
+      dp_azim.append(azim)
+      dp_num.append(delay_point)
+    else:
+      dp.append(delay_point)
+      dp_real.append(azim)
+    
+  # 构建时延点数到角度的映射
+  def fmax(x,a,b):
+    return a*x+b
+  fit_a, fit_b = optimize.curve_fit(fmax, dp_num,dp_azim,[1,1])
+  # [10.07, 0.27]
+  '''
+  print fit_a
+  plt.stem(dp_num,dp_azim)
+  plt.xlabel('delay_points')
+  plt.ylabel('azim')
+  x = np.arange(-10,10,0.1)
+  plt.plot(x, fmax(x,fit_a[0],fit_a[1]))
+  plt.show()
+  '''
+  dp_estimate = fmax(np.array(dp), fit_a[0], fit_a[1])
+  print(np.mean(np.abs(dp_estimate-dp_real)))
   
-
+  
+  
 if __name__=='__main__':
-  dataGen()
+  testGCC()
